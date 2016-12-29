@@ -30,6 +30,46 @@ app.use(function(req, res, next){
     next();
 });
 
+var formidable = require('formidable');
+app.get('/contest/vacation-photo',function(req,res){ var now = new Date();
+    res.render('contest/vacation-photo',{
+    year: now.getFullYear(),month: now.getMonth()
+});
+});
+app.post('/contest/vacation-photo/:year/:month', function(req, res){
+    var form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files){
+        if(err) return res.redirect(303, '/error');
+        console.log('received fields:'); console.log(fields);
+        console.log('received files:'); console.log(files);
+        res.redirect(303, '/thank-you');
+    });
+});
+
+app.use(require('body-parser')());
+app.get('/newsletter', function(req, res){
+// 我们会在后面学到 CSRF......目前,只提供一个虚拟值
+    res.render('newsletter', { csrf: 'CSRF token goes here' });
+});
+app.post('/process', function(req, res){
+    if(req.xhr || req.accepts('json,html')==='json'){
+// 如果发生错误,应该发送 { error: 'error description' }
+
+        res.json({
+            success: 'success',
+            code: 200,
+            data: {
+                name: req.body.name,
+                email: req.body.email
+            }
+        });
+    }else{
+// 如果发生错误,应该重定向到错误页面
+        res.redirect(303, '/thank-you');
+    }
+});
+
+
 app.get('/tours/hood-river', function(req, res){
     res.render('tours/hood-river');
 });
