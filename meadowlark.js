@@ -7,7 +7,16 @@ var fortune = require('./lib/fortune.js');
 
 // 设置 handlebars 视图引擎
 var handlebars = require('express3-handlebars')
-    .create({ defaultLayout:'main' });
+    .create({
+        defaultLayout:'main',
+        helpers: {
+            section: function(name, options){
+                if(!this._sections) this._sections = {};
+                this._sections[name] = options.fn(this);
+                return null;
+            } }
+    });
+
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
@@ -27,7 +36,16 @@ app.get('/tours/hood-river', function(req, res){
 app.get('/tours/request-group-rate', function(req, res){
     res.render('tours/request-group-rate');
 });
-
+app.get('/nursery-rhyme', function(req, res){
+    res.render('nursery-rhyme');
+});
+app.get('/data/nursery-rhyme', function(req, res){
+    res.json({
+        animal: 'squirrel',
+        bodyPart: 'tail',
+        adjective: 'bushy',
+        noun: 'heck',
+    }); });
 app.get('/', function(req, res,next){
     res.render('home');
 });
@@ -36,6 +54,9 @@ app.get('/about', function(req, res,next){
         fortune: fortune.getFortune(),
         pageTestScript: '/qa/tests-about.js'
     });
+});
+app.get('/fish', function(req, res,next){
+    res.json(200,{"data":"fish"});
 });
 //定制404页面
 app.use(function(req, res,next){
