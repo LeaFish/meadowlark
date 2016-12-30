@@ -5,6 +5,23 @@ var express = require('express');
 var app = express();
 var fortune = require('./lib/fortune.js');
 
+//// 创建子域名 "admin" ......它应该出现在所有其他路由之前
+//var admin = express.Router();
+//app.use(vhost('admin.*', admin));
+//// 创建 admin 的路由;它们可以在任何地方定义
+//admin.get('/', function(req, res){
+//res.render('admin/home');
+//});
+//admin.get('/users', function(req, res){
+//    res.render('admin/users');
+//});
+
+var credentials = require('./credentials.js');
+app.use(require('cookie-parser')(credentials.cookieSecret));
+
+//var connect = require('connect');
+//app.use(connect.compress);
+
 // 设置 handlebars 视图引擎
 var handlebars = require('express3-handlebars')
     .create({
@@ -42,9 +59,21 @@ app.post('/contest/vacation-photo/:year/:month', function(req, res){
         if(err) return res.redirect(303, '/error');
         console.log('received fields:'); console.log(fields);
         console.log('received files:'); console.log(files);
-        res.redirect(303, '/thank-you');
+        //res.redirect(303, '/thank-you');
+        res.json(files);
     });
 });
+
+//var jqupload = require('jquery-file-upload-middleware');
+//app.use('/upload', function(req, res, next){ var now = Date.now(); jqupload.fileHandler({
+//    uploadDir: function(){
+//        return __dirname + '/public/uploads/' + now;
+//    },
+//    uploadUrl: function(){
+//        return '/uploads/' + now; },
+//})(req, res, next);
+//});
+
 
 app.use(require('body-parser')());
 app.get('/newsletter', function(req, res){
@@ -69,6 +98,10 @@ app.post('/process', function(req, res){
     }
 });
 
+app.get('/tes+t',function(req,res){
+    //console.log(req.body.test);
+    res.json({code:200,message:'success'})
+});
 
 app.get('/tours/hood-river', function(req, res){
     res.render('tours/hood-river');
